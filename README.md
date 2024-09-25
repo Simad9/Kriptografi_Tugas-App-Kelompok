@@ -3,9 +3,9 @@ Jadi tugas ini adalah membuat sebuah aplikasi yang menerapkan algoritma kriptogr
 
 Pada Tugas ini Kelompok ini beranggotakan : 
 - Akbar Ariffianto (123220004)
-- Wijdan Akhmad S (123220004)
-- Ageng Sandar R (123220004)
-- Mohamad Riski A (123220004)
+- Wijdan Akhmad S (123220010)
+- Ageng Sandar R (123220011)
+- Mohamad Riski A (123220021)
 
 Pada aplikasi ini terdiri dari 5 menu yang dimana setiap menu : 
 1. Kriptografi Algoritma Klasik (Caesar)
