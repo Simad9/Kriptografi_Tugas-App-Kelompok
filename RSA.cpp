@@ -1,11 +1,10 @@
 // Kode Algoritma Kriptografi RSA
-// sumber informasi : https://www.geeksforgeeks.org/rsa-algorithm-cryptography/
-
 #include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
+
 using namespace std;
 
 // Fungsi - Generate Kunci
@@ -13,132 +12,22 @@ int isPrima(int number);
 int gcd(int a, int b);
 void generateKunci();
 
-// Fungsi - Pengendalian e - n dan d - n
-long long modExp(long long base, long long exponent, long long modulus) {
-  long long result = 1;
-  base = base % modulus;
+long long modExp(long long base, long long exponent, long long modulus);
+vector<long long> encrypt(const string &plaintext, long long e, long long n);
+string decrypt(const vector<long long> &ciphertext, long long d, long long n);
+vector<long long> parseInputToVector(const string &input);
 
-  while (exponent > 0) {
-    // Jika exponent adalah bilangan ganjil, kalikan dengan base
-    if (exponent % 2 == 1) {
-      result = (result * base) % modulus;
-    }
-    // Pembagian exponent dengan 2
-    exponent = exponent >> 1;        // Sama dengan exponent /= 2
-    base = (base * base) % modulus;  // Square base
-  }
+void enkripsiRSA();
+void dekripsiRSA();
 
-  return result;
-}
-
-// Fungsi - Enkripsi
-// Fungsi untuk melakukan enkripsi
-vector<long long> encrypt(const std::string &plaintext, long long e,
-                          long long n) {
-  vector<long long> ciphertext;
-  for (char ch : plaintext) {
-    long long encryptedChar = modExp(static_cast<long long>(ch), e, n);
-    ciphertext.push_back(encryptedChar);
-  }
-  return ciphertext;
-}
-
-// Fungsi - Dekripsi
-// Fungsi untuk melakukan dekripsi
-string decrypt(const std::vector<long long> &ciphertext, long long d,
-               long long n) {
-  string plaintext;
-  for (long long encryptedChar : ciphertext) {
-    char decryptedChar = static_cast<char>(modExp(encryptedChar, d, n));
-    plaintext += decryptedChar;
-  }
-  return plaintext;
-}
-
-// Fungsi Tampilan
-void tampilan();
-
-// Try dan Error
-void enkripsiRSA() {
-  // INIT
-  string plaintextInput;
-  int kunciPublik, modulus;
-
-  // TAMPILAN
-  cout << "Enkripsi Metode RSA \n\n";
-  cout << "Masukkan Plaintext : ";
-  getline(cin >> ws, plaintextInput);
-  cout << "Masukkan Kunci Publik : ";
-  cin >> kunciPublik;
-  cout << "Masukkan Modulus : ";
-  cin >> modulus;
-  cout << endl;
-  // CODE BERKERJA
-  // 1. Plaintext ubah jadi ASCII
-  int plaintextASCI[plaintextInput.length()];
-
-  // konversi plaintext
-  for (int i = 0; i < plaintextInput.length(); i++) {
-    plaintextASCI[i] = (int)plaintextInput[i];
-    cout << plaintextASCI[i] << " ";
-  }
-  cout << endl;
-
-  // 2. Enkripsi
-  vector<long long> ciphertext = encrypt(plaintextInput, kunciPublik, modulus);
-  cout << "Ciphertext: ";
-  for (long long value : ciphertext) {
-    cout << value << " ";
-  }
-  cout << std::endl;
-}
-
-// DEKRIPSI
-// Fungsi untuk mengubah input string menjadi vector
-std::vector<long long> parseInputToVector(const std::string &input) {
-  std::vector<long long> vec;
-  std::stringstream ss(input);
-  long long number;
-  while (ss >> number) {
-    vec.push_back(number);
-  }
-  return vec;
-}
-
-void dekripsiRSA() {
-  // INIT
-  string ciphertextInput;
-  int kunciPrivat, modulus;
-  // TAMPILAN
-  cout << "Dekripsi Metode RSA \n\n";
-  cout << "Masukkan Ciphertext : ";
-  getline(cin >> ws, ciphertextInput);
-  cout << "Masukkan Kunci Privat : ";
-  cin >> kunciPrivat;
-  cout << "Masukkan Modulus : ";
-  cin >> modulus;
-  cout << endl;
-  // CODE BERKERJA
-
-  // 1. Ubah input string menjadi vector
-  vector<long long> ciphertext = parseInputToVector(ciphertextInput);
-  cout << "Ciphertext: ";
-  for (long long value : ciphertext) {
-    cout << value << " ";
-  }
-  cout << std::endl;
-
-  // 2. Dekripsi + Tampilkan
-  string decryptedText = decrypt(ciphertext, kunciPrivat, modulus);
-  cout << "Decrypted Text: " << decryptedText << endl;
-}
+void rsa();
 
 int main() {
-  tampilan();
+  rsa();
   return 0;
 }
 
-// KUMPULAN FUNGSI
+// ** KUMPULAN FUNGSI **
 
 // Fungsi untuk mengecek apakah sebuah bilangan prima
 int isPrima(int number) {
@@ -242,7 +131,120 @@ void generateKunci() {
   cout << endl;
 };
 
-void tampilan() {
+// Fungsi - Pengendalian e - n dan d - n
+long long modExp(long long base, long long exponent, long long modulus) {
+  long long result = 1;
+  base = base % modulus;
+
+  while (exponent > 0) {
+    // Jika exponent adalah bilangan ganjil, kalikan dengan base
+    if (exponent % 2 == 1) {
+      result = (result * base) % modulus;
+    }
+    // Pembagian exponent dengan 2
+    exponent = exponent >> 1;        // Sama dengan exponent /= 2
+    base = (base * base) % modulus;  // Square base
+  }
+
+  return result;
+}
+
+// Fungsi - Enkripsi
+vector<long long> encrypt(const string &plaintext, long long e, long long n) {
+  vector<long long> ciphertext;
+  for (char ch : plaintext) {
+    long long encryptedChar = modExp(static_cast<long long>(ch), e, n);
+    ciphertext.push_back(encryptedChar);
+  }
+  return ciphertext;
+}
+
+// Fungsi - Dekripsi
+string decrypt(const vector<long long> &ciphertext, long long d, long long n) {
+  string plaintext;
+  for (long long encryptedChar : ciphertext) {
+    char decryptedChar = static_cast<char>(modExp(encryptedChar, d, n));
+    plaintext += decryptedChar;
+  }
+  return plaintext;
+}
+
+// Fungsi untuk mengubah input string menjadi vector
+vector<long long> parseInputToVector(const string &input) {
+  vector<long long> vec;
+  stringstream ss(input);
+  long long number;
+  while (ss >> number) {
+    vec.push_back(number);
+  }
+  return vec;
+}
+
+// ENKRIPSI
+void enkripsiRSA() {
+  // INIT
+  string plaintextInput;
+  int kunciPublik, modulus;
+
+  // TAMPILAN
+  cout << "Enkripsi Metode RSA \n\n";
+  cout << "Masukkan Plaintext : ";
+  getline(cin >> ws, plaintextInput);
+  cout << "Masukkan Kunci Publik : ";
+  cin >> kunciPublik;
+  cout << "Masukkan Modulus : ";
+  cin >> modulus;
+  cout << endl;
+  // CODE BERKERJA
+  // 1. Plaintext ubah jadi ASCII
+  int plaintextASCI[plaintextInput.length()];
+
+  // konversi plaintext
+  for (int i = 0; i < plaintextInput.length(); i++) {
+    plaintextASCI[i] = (int)plaintextInput[i];
+    cout << plaintextASCI[i] << " ";
+  }
+  cout << endl;
+
+  // 2. Enkripsi
+  vector<long long> ciphertext = encrypt(plaintextInput, kunciPublik, modulus);
+  cout << "Ciphertext: ";
+  for (long long value : ciphertext) {
+    cout << value << " ";
+  }
+  cout << endl;
+}
+
+// DEKRIPSI
+void dekripsiRSA() {
+  // INIT
+  string ciphertextInput;
+  int kunciPrivat, modulus;
+  // TAMPILAN
+  cout << "Dekripsi Metode RSA \n\n";
+  cout << "Masukkan Ciphertext : ";
+  getline(cin >> ws, ciphertextInput);
+  cout << "Masukkan Kunci Privat : ";
+  cin >> kunciPrivat;
+  cout << "Masukkan Modulus : ";
+  cin >> modulus;
+  cout << endl;
+  // CODE BERKERJA
+
+  // 1. Ubah input string menjadi vector
+  vector<long long> ciphertext = parseInputToVector(ciphertextInput);
+  cout << "Ciphertext: ";
+  for (long long value : ciphertext) {
+    cout << value << " ";
+  }
+  cout << endl;
+
+  // 2. Dekripsi + Tampilkan
+  string decryptedText = decrypt(ciphertext, kunciPrivat, modulus);
+  cout << "Decrypted Text: " << decryptedText << endl;
+}
+
+void rsa() {
   // Init
   char menu;
   // Tampilan
