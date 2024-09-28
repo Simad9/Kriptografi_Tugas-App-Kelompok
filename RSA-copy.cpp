@@ -1,83 +1,63 @@
 #include <iostream>
-#include <cmath>
 #include <vector>
-#include <string>
+#include <cmath>
 
-using namespace std;
-
-// Fungsi untuk menghitung gcd
-int gcd(int a, int b) {
-    return (b == 0) ? a : gcd(b, a % b);
+// Fungsi untuk menghitung (base^exponent) mod modulus
+long long modExp(long long base, long long exponent, long long modulus) {
+    long long result = 1;
+    base = base % modulus;
+    
+    while (exponent > 0) {
+        // Jika exponent adalah bilangan ganjil, kalikan dengan base
+        if (exponent % 2 == 1) {
+            result = (result * base) % modulus;
+        }
+        // Pembagian exponent dengan 2
+        exponent = exponent >> 1; // Sama dengan exponent /= 2
+        base = (base * base) % modulus; // Square base
+    }
+    
+    return result;
 }
 
-// Fungsi untuk menghitung modulo invers
-int modInverse(int e, int phi) {
-    for (int d = 1; d < phi; d++) {
-        if ((e * d) % phi == 1)
-            return d;
+// Fungsi untuk melakukan enkripsi
+std::vector<long long> encrypt(const std::string &plaintext, long long e, long long n) {
+    std::vector<long long> ciphertext;
+    for (char ch : plaintext) {
+        long long encryptedChar = modExp(static_cast<long long>(ch), e, n);
+        ciphertext.push_back(encryptedChar);
     }
-    return -1; // tidak ditemukan
+    return ciphertext;
 }
 
-// Fungsi untuk mengenkripsi plaintext
-int encrypt(int m, int e, int n) {
-    int c = 1;
-    for (int i = 0; i < e; i++) {
-        c = (c * m) % n;
+// Fungsi untuk melakukan dekripsi
+std::string decrypt(const std::vector<long long> &ciphertext, long long d, long long n) {
+    std::string plaintext;
+    for (long long encryptedChar : ciphertext) {
+        char decryptedChar = static_cast<char>(modExp(encryptedChar, d, n));
+        plaintext += decryptedChar;
     }
-    return c;
-}
-
-// Fungsi untuk mendekripsi ciphertext
-int decrypt(int c, int d, int n) {
-    int m = 1;
-    for (int i = 0; i < d; i++) {
-        m = (m * c) % n;
-    }
-    return m;
-}
-
-// Fungsi untuk mengubah string ke integer
-int stringToInt(const string &s) {
-    int num = 0;
-    for (char ch : s) {
-        num = num * 256 + ch; // Menggunakan 256 untuk representasi karakter
-    }
-    return num;
-}
-
-// Fungsi untuk mengubah integer ke string
-string intToString(int num) {
-    string s;
-    while (num > 0) {
-        s = char(num % 256) + s; // Menggunakan 256 untuk representasi karakter
-        num /= 256;
-    }
-    return s;
+    return plaintext;
 }
 
 int main() {
-    // Nilai kunci RSA
-    int p = 61, q = 53;
-    int n = p * q; // n
-    int phi = (p - 1) * (q - 1); // φ(n)
-    int e = 17; // Eksponen publik
-    int d = modInverse(e, phi); // Eksponen privat
-
-    // Pesan yang akan dienkripsi
-    string plaintext = "Halo";
-    int m = stringToInt(plaintext); // Ubah plaintext ke integer
+    std::string plaintext = "Halo";
+    long long e = 17;
+    long long n = 3233;
+    long long d = 2753;
 
     // Enkripsi
-    int c = encrypt(m, e, n);
-    cout << "Ciphertext: " << c << endl;
+    std::vector<long long> ciphertext = encrypt(plaintext, e, n);
+    
+    std::cout << "Ciphertext: ";
+    for (long long value : ciphertext) {
+        std::cout << value << " ";
+    }
+    std::cout << std::endl;
 
     // Dekripsi
-    int decrypted = decrypt(c, d, n);
-    string decryptedText = intToString(decrypted); // Ubah integer kembali ke string
-
-    // Menampilkan hasil
-    cout << "Decrypted Text: " << decryptedText << endl;
+    std::string decryptedText = decrypt(ciphertext, d, n);
+    std::cout << "Decrypted Text: " << decryptedText << std::endl;
 
     return 0;
 }

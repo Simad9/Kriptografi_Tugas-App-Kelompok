@@ -1,6 +1,7 @@
 // Kode Algoritma Kriptografi RSA
 // sumber informasi : https://www.geeksforgeeks.org/rsa-algorithm-cryptography/
 
+#include <cmath>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -12,9 +13,47 @@ int isPrima(int number);
 int gcd(int a, int b);
 void generateKunci();
 
+// Fungsi - Pengendalian e - n dan d - n
+long long modExp(long long base, long long exponent, long long modulus) {
+  long long result = 1;
+  base = base % modulus;
+
+  while (exponent > 0) {
+    // Jika exponent adalah bilangan ganjil, kalikan dengan base
+    if (exponent % 2 == 1) {
+      result = (result * base) % modulus;
+    }
+    // Pembagian exponent dengan 2
+    exponent = exponent >> 1;        // Sama dengan exponent /= 2
+    base = (base * base) % modulus;  // Square base
+  }
+
+  return result;
+}
+
 // Fungsi - Enkripsi
+// Fungsi untuk melakukan enkripsi
+vector<long long> encrypt(const std::string &plaintext, long long e,
+                          long long n) {
+  vector<long long> ciphertext;
+  for (char ch : plaintext) {
+    long long encryptedChar = modExp(static_cast<long long>(ch), e, n);
+    ciphertext.push_back(encryptedChar);
+  }
+  return ciphertext;
+}
 
 // Fungsi - Dekripsi
+// Fungsi untuk melakukan dekripsi
+string decrypt(const std::vector<long long> &ciphertext, long long d,
+               long long n) {
+  string plaintext;
+  for (long long encryptedChar : ciphertext) {
+    char decryptedChar = static_cast<char>(modExp(encryptedChar, d, n));
+    plaintext += decryptedChar;
+  }
+  return plaintext;
+}
 
 // Fungsi Tampilan
 void tampilan();
@@ -22,13 +61,13 @@ void tampilan();
 // Try dan Error
 void enkripsiRSA() {
   // INIT
-  string plaintext;
+  string plaintextInput;
   int kunciPublik, modulus;
 
   // TAMPILAN
   cout << "Enkripsi Metode RSA \n\n";
   cout << "Masukkan Plaintext : ";
-  cin >> plaintext;
+  getline(cin >> ws, plaintextInput);
   cout << "Masukkan Kunci Publik : ";
   cin >> kunciPublik;
   cout << "Masukkan Modulus : ";
@@ -36,63 +75,62 @@ void enkripsiRSA() {
   cout << endl;
   // CODE BERKERJA
   // 1. Plaintext ubah jadi ASCII
-  int plaintextASCI[plaintext.length()];
+  int plaintextASCI[plaintextInput.length()];
 
   // konversi plaintext
-  for (int i = 0; i < plaintext.length(); i++) {
-    plaintextASCI[i] = (int)plaintext[i];
-  }
-  cout << endl;
-  // Tampilkan arci
-  for (int i = 0; i < plaintext.length(); i++) {
+  for (int i = 0; i < plaintextInput.length(); i++) {
+    plaintextASCI[i] = (int)plaintextInput[i];
     cout << plaintextASCI[i] << " ";
   }
+  cout << endl;
 
   // 2. Enkripsi
-  int chipertext[plaintext.length()];
-  for (int i = 0; i < plaintext.length(); i++) {
-    chipertext[i] = (plaintextASCI[i] * kunciPublik) % modulus;
+  vector<long long> ciphertext = encrypt(plaintextInput, kunciPublik, modulus);
+  cout << "Ciphertext: ";
+  for (long long value : ciphertext) {
+    cout << value << " ";
   }
+  cout << std::endl;
+}
 
-  // 3. Tampilakan Chipertext
-  for (int i = 0; i < plaintext.length(); i++) {
-    cout << chipertext[i] << " ";
+// DEKRIPSI
+// Fungsi untuk mengubah input string menjadi vector
+std::vector<long long> parseInputToVector(const std::string &input) {
+  std::vector<long long> vec;
+  std::stringstream ss(input);
+  long long number;
+  while (ss >> number) {
+    vec.push_back(number);
   }
+  return vec;
 }
 
 void dekripsiRSA() {
   // INIT
-  string ciphertext;
+  string ciphertextInput;
   int kunciPrivat, modulus;
   // TAMPILAN
   cout << "Dekripsi Metode RSA \n\n";
   cout << "Masukkan Ciphertext : ";
-  getline(cin >> ws, ciphertext);
+  getline(cin >> ws, ciphertextInput);
   cout << "Masukkan Kunci Privat : ";
   cin >> kunciPrivat;
   cout << "Masukkan Modulus : ";
   cin >> modulus;
   cout << endl;
   // CODE BERKERJA
-  std::istringstream iss(ciphertext);
-  std::vector<int> numbers;
-  int number;
 
-  // Memecah string menjadi angka dan memasukkannya ke dalam array
-  while (iss >> number) {
-    numbers.push_back(number);
+  // 1. Ubah input string menjadi vector
+  vector<long long> ciphertext = parseInputToVector(ciphertextInput);
+  cout << "Ciphertext: ";
+  for (long long value : ciphertext) {
+    cout << value << " ";
   }
+  cout << std::endl;
 
-  for (size_t i = 0; i < numbers.size(); ++i) {
-    int result = (numbers[i] * kunciPrivat) % modulus;
-    std::cout << result << " ";
-  }
-
-  // 1. Ciphertext ubah jadi array dulu
-
-  // 2. Dekripsi
-
-  // 3. Tampilkan
+  // 2. Dekripsi + Tampilkan
+  string decryptedText = decrypt(ciphertext, kunciPrivat, modulus);
+  cout << "Decrypted Text: " << decryptedText << endl;
 }
 
 int main() {
@@ -114,6 +152,7 @@ int isPrima(int number) {
   }
   return 1;
 }
+
 // Fungsi untuk menghitung GCD menggunakan Algoritma Euclid
 int gcd(int a, int b) {
   while (b != 0) {
@@ -123,6 +162,38 @@ int gcd(int a, int b) {
   }
   return a;
 }
+
+// Function to calculate gcd using the Extended Euclidean Algorithm
+int gcdExtended(int a, int b, int &x, int &y) {
+  if (a == 0) {
+    x = 0;
+    y = 1;
+    return b;
+  }
+
+  int x1, y1;
+  int gcd = gcdExtended(b % a, a, x1, y1);
+
+  x = y1 - (b / a) * x1;
+  y = x1;
+
+  return gcd;
+}
+
+// Function to find the modular inverse of e modulo phi(n)
+int modInverse(int e, int phi) {
+  int x, y;
+  int gcd = gcdExtended(e, phi, x, y);
+  if (gcd != 1) {
+    cout << "Inverse does not exist!" << endl;  // e and phi are not coprime
+    return -1;
+  } else {
+    // Make x positive
+    int d = (x % phi + phi) % phi;
+    return d;
+  }
+}
+
 // Fungsi generate kunci
 void generateKunci() {
   // INIT
@@ -155,19 +226,14 @@ void generateKunci() {
   // Input e - kunci publik
   cout << "Masukkan e : ";
   cin >> e_kunciPublik;
-  while ((e_kunciPublik < 2 || e_kunciPublik > fi_totint) &&
-         (gcd(e_kunciPublik, fi_totint) != 1)) {
+  while ((e_kunciPublik > 1 || e_kunciPublik < fi_totint) &&
+         !(gcd(e_kunciPublik, fi_totint) == 1)) {
     cout << "Masukkan e : ";
     cin >> e_kunciPublik;
   }
 
   // Menghitung d - kunci privat
-  e_kunciPublik = e_kunciPublik % fi_totint;
-  for (int x = 1; x < fi_totint; x++) {
-    if ((e_kunciPublik * x) % fi_totint == 1) {
-      d_kunciPrivat = x;
-    }
-  }
+  d_kunciPrivat = modInverse(e_kunciPublik, fi_totint);
 
   // Output
   cout << "\nKunci Publik : " << e_kunciPublik << endl;
@@ -175,6 +241,7 @@ void generateKunci() {
   cout << "Modulus : " << n_modulus << endl;
   cout << endl;
 };
+
 void tampilan() {
   // Init
   char menu;
