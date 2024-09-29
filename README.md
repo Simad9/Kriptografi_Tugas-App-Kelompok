@@ -13,3 +13,6 @@ Pada aplikasi ini terdiri dari 5 menu yang dimana setiap menu :
 3. Kriptografi Algoritma Modern (AES - Advanced Encryption Standard)
 4. Kriptografi Algoritma Modern (RSA - Rivest-Shamir-Adleman)
 5. Super Algoritma dari 4 diatas (Gabungan)
+
+Video Penjelasan Kode : 
+- RSA = [klik disini](https://youtu.be/XzjpLsBNbw4)
