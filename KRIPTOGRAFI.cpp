@@ -15,6 +15,9 @@ using namespace std;
 void caesar();
 
 // == VIGENERE CIPHER ==
+void enkripsiVigenere(string message, string key);
+void dekripsiVigenere(string message, string key);
+void vigenere();
 
 // == RC4 CIPHER ==
 void RC4();
@@ -68,6 +71,7 @@ int main()
     }
     else if (pilih == 2)
     {
+      vigenere();
     }
     else if (pilih == 3)
     {
@@ -79,6 +83,7 @@ int main()
     }
     else if (pilih == 5)
     {
+      
     }
     else if (pilih == 6)
     {
@@ -205,6 +210,154 @@ void caesar()
 }
 
 // == VIGENERE CHIPER ==
+// Mempersiapkan kunci Vigenere (Menjadi Kapital dan mengabaikan spasi)
+void prepareKeyVigenere(string &key){
+    string keyReady;
+    for(int i = 0; i < key.size(); ++i){
+        if(key[i] != ' '){
+            keyReady += toupper(key[i]); 
+        }
+    }
+    key = keyReady;
+}
+
+// Fungsi untuk validasi kunci (tidak boleh kosong dan hanya boleh alfabet)
+bool validasiKunci(string key){
+    if(key.empty()){
+        cout << "Kunci tidak boleh kosong!" << endl;
+        return false;
+    }
+    for(int i = 0; i < key.length(); ++i){
+        if(!isalpha(key[i]) && key[i] != ' '){
+            cout << "Kunci hanya boleh berisi huruf alfabet! Silahkan masukkan kembali." << endl;
+            return false;
+        }
+    }
+    return true;
+}
+
+// Fungsi untuk meminta input kunci
+string inputKunciVigenere(){
+    string key;
+    do{
+        cout << "Masukkan kunci: ";
+        getline(cin, key);
+    } while(!validasiKunci(key));
+    return key;
+}
+
+// Fungsi enkripsi Vigenere
+void enkripsiVigenere(string message, string key){
+    string resultEnkripsi;
+    int indeksKey = 0;
+
+    for(int i = 0; i < message.length(); ++i){
+        char plainteks = message[i];
+
+        if(plainteks >= 'a' && plainteks <= 'z'){
+            plainteks = toupper(plainteks);
+        } else if(plainteks < 'A' || plainteks > 'Z'){
+            resultEnkripsi += plainteks;
+            continue;
+        }
+
+        resultEnkripsi += ((plainteks - 'A') + (key[indeksKey] - 'A')) % 26 + 'A';
+        indeksKey = (indeksKey + 1) % key.length();
+    }
+    system("cls");
+    cout << "HASIL" << endl;
+    cout << "=================================" << endl;
+    cout << "   Plain teks\t\t\t: " << message << endl;
+    cout << "   Kunci\t\t\t: " << key << endl;
+    cout << "   Pesan TerEnkripsi\t\t: " << resultEnkripsi << endl;
+}
+
+// Fungsi dekripsi Vigenere
+void dekripsiVigenere(string message, string key){
+    string resultDekripsi;
+    int indeksKey = 0;
+
+    for(int i = 0; i < message.length(); ++i){
+        char chiperteks = message[i];
+
+        if(chiperteks >= 'a' && chiperteks <= 'z'){
+            chiperteks = toupper(chiperteks);
+        } else if(chiperteks < 'A' || chiperteks > 'Z'){
+            resultDekripsi += chiperteks;
+            continue;
+        }
+
+        resultDekripsi += (chiperteks - key[indeksKey] + 26) % 26 + 'A';
+        indeksKey = (indeksKey + 1) % key.length();
+    }
+    system("cls");
+    cout << "HASIL" << endl;
+    cout << "=================================" << endl;
+    cout << "   Chiper teks\t\t\t: " << message << endl;
+    cout << "   Kunci\t\t\t: " << key << endl;
+    cout << "   Pesan TerDekripsi\t\t: " << resultDekripsi << endl;
+}
+
+// Fungsi menu Vigenere
+void vigenere() {
+    int pilihan;
+    string key, message;
+    char ulang;
+
+    do {
+        system("cls");
+        cout << "---------------------------------------" << endl;
+        cout << "         >> Menu Vigenere << "         << endl;
+        cout << "---------------------------------------" << endl;
+        cout << "Pilih mode yang diinginkan   :" << endl;
+        cout << "  1. Enkripsi \n";
+        cout << "  2. Deskripsi \n";
+        cout << "  0. Keluar \n";
+        cout << "Masukkan Mode yang diinginkan: ";
+        cin >> pilihan;
+        cin.ignore();
+        cout << endl;
+
+        switch (pilihan) {
+        case 1:
+            system("cls");
+            cout << "Enkripsi Vigenere" << endl;
+            cout << "====================================" << endl <<endl;
+            cout << "Masukkan pesan yang ingin dienkripsi: ";
+            getline(cin, message);
+            key = inputKunciVigenere();
+
+            prepareKeyVigenere(key);
+            enkripsiVigenere(message, key);
+            break;
+
+        case 2:
+            system("cls");
+            cout << "Dekripsi Vigenere" << endl;
+            cout << "====================================" << endl <<endl;;
+            cout << "Masukkan pesan yang ingin didekripsi: ";
+            getline(cin, message);
+            key = inputKunciVigenere();
+
+            prepareKeyVigenere(key);
+            dekripsiVigenere(message, key);
+            break;
+
+        case 0 :
+            cout << "Keluar dari Menu Vigenere Chiper" << endl;
+            return;
+            break;
+
+        default:
+            cout << "Pilihan tidak valid." << endl;
+            break;
+        }
+        cout << "\nKembali Ke Menu Vigenere (y/t): ";
+        cin >> ulang;
+    } 
+    while (toupper(ulang) == 'Y');
+    system("cls");
+}
 
 // == RC4 CHIPER ==
 void rc4_init(vector<int> &S, const string &key)
