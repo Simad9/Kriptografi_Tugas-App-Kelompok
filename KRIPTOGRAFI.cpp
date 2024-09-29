@@ -19,17 +19,19 @@ void caesar();
 // == AES CIPHER ==
 
 // == RSA CHIPER ==
-void judul();
-int isPrima(int number);
-int gcd(int a, int b);
-long long modExp(long long base, long long exponent, long long modulus);
-vector<long long> encrypt(const string &plaintext, long long e, long long n);
-string decrypt(const vector<long long> &ciphertext, long long d, long long n);
-vector<long long> parseInputToVector(const string &input);
-void generateKunci();
-void enkripsiRSA();
-void dekripsiRSA();
-void rsa();
+void judul(); // tampilan judul atas
+int isPrima(int number); // mengecek bilangan prima
+int gcd(int a, int b); // menghitung gcd(Great Common Divisor) / Faktor Persekutuan Terbesar menggunakan Algoritam Euclid
+int gcdExtended(int a, int b, int &x, int &y); // ini yang diperpanjang
+int modInverse(int e, int phi); // mencari modular dari totint (φ(n))
+void generateKunci(); // Untuk generate kunci
+long long modExp(long long base, long long exponent, long long modulus); // Untuk menghitung base^eksponen mod modulus secara efisien, rumus RSA
+vector<long long> encrypt(const string &plaintext, long long e, long long n); // Untuk enkripsi
+string decrypt(const vector<long long> &ciphertext, long long d, long long n); // Untuk dekripsi
+vector<long long> parseInputToVector(const string &input); //mengubah String menjadi Vector
+void enkripsiRSA(); // Tampilan Enrkipsi RSA
+void dekripsiRSA(); // Tampilan Dekripsi RSA
+void rsa(); // Tampilan secara keseurugahn
 
 int main (){
 
@@ -192,7 +194,7 @@ int gcd(int a, int b) {
   return a;
 }
 
-// Function to calculate gcd using the Extended Euclidean Algorithm
+// Fungsi untuk menghitung GCD menggunakan Algoritma Euclid
 int gcdExtended(int a, int b, int &x, int &y) {
   if (a == 0) {
     x = 0;
@@ -209,12 +211,12 @@ int gcdExtended(int a, int b, int &x, int &y) {
   return gcd;
 }
 
-// Function to find the modular inverse of e modulo phi(n)
+// Berfungsi untuk mencari invers modular dari e modulo phi(n) / totint
 int modInverse(int e, int phi) {
   int x, y;
   int gcd = gcdExtended(e, phi, x, y);
   if (gcd != 1) {
-    cout << "Inverse does not exist!" << endl;  // e and phi are not coprime
+    cout << "Invers tidak ada!" << endl; 
     return -1;
   } else {
     // Make x positive
@@ -274,7 +276,7 @@ void generateKunci() {
   cout << endl;
 };
 
-// Fungsi - Pengendalian e - n dan d - n
+// Fungsi untuk menghitung base^eksponen mod modulus secara efisien, rumus RSA
 long long modExp(long long base, long long exponent, long long modulus) {
   long long result = 1;
   base = base % modulus;
@@ -285,6 +287,7 @@ long long modExp(long long base, long long exponent, long long modulus) {
       result = (result * base) % modulus;
     }
     // Pembagian exponent dengan 2
+    // menggunakan `>>` Operator bitwise digunakan untuk menggeser bit suatu bilangan biner ke kanan
     exponent = exponent >> 1;        // Sama dengan exponent /= 2
     base = (base * base) % modulus;  // Square base
   }
@@ -340,12 +343,13 @@ void enkripsiRSA() {
   cin >> modulus;
   cout << endl;
   // CODE BERKERJA
+  
   // 1. Plaintext ubah jadi ASCII
   int plaintextASCI[plaintextInput.length()];
 
   // konversi plaintext
   for (int i = 0; i < plaintextInput.length(); i++) {
-    plaintextASCI[i] = (int)plaintextInput[i];
+    plaintextASCI[i] = (int)plaintextInput[i]; //(int)plaintextInput[i] diconvert ke integer
     // cout << plaintextASCI[i] << " ";
   }
   cout << endl;
