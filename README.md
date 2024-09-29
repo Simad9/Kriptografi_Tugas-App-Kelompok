@@ -16,3 +16,4 @@ Pada aplikasi ini terdiri dari 5 menu yang dimana setiap menu :
 
 Video Penjelasan Kode : 
 - RSA = [klik disini](https://youtu.be/XzjpLsBNbw4)
+- RC4 = [klik disini](https://www.youtube.com/watch?v=VO86lvV0GAk)
