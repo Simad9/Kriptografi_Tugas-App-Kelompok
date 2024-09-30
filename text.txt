@@ -1,0 +1,46 @@
+-- testing super ---
+=== TEST 1 ===
+= Enrkispi= 
+Caesar
+plaintext = test
+kunci = 2
+chipertext = vguv
+
+Vigenere
+plaintext = vguv
+kunci = informatika
+chipertext = DTZJ
+
+RC4
+kunci = informatika
+plaintext = DTZJ
+chipertext = 13c28cc2
+
+RSA
+plaintext = 13c28cc2
+kunci publik = 17
+modulus = 3233
+chipertext = 2906 368 281 532 1794 281 538
+
+=== TEST 2 ===
+= Enrkispi= 
+Caesar
+plaintext = test
+kunci = 2
+chipertext = vguv
+
+Vigenere
+plaintext = vguv
+kunci = info --> jadi --> INFO
+chipertext = DTZJ
+
+RC4
+plaintext = DTZJ
+kunci = info
+chipertext = a44255ab
+
+RSA
+plaintext = a44255ab
+kunci publik = 17
+modulus = 3233
+chipertext = 1632 529 529 538 1802 1802 1632 2570

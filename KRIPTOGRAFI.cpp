@@ -15,6 +15,8 @@ using namespace std;
 void caesar();
 
 // == VIGENERE CIPHER ==
+void prepareKeyVigenere(string &key);
+string inputKunciVigenere();
 void enkripsiVigenere(string message, string key);
 void dekripsiVigenere(string message, string key);
 void vigenere();
@@ -40,6 +42,183 @@ vector<long long> parseInputToVector(const string &input);                     /
 void enkripsiRSA();                                                            // Tampilan Enrkipsi RSA
 void dekripsiRSA();                                                            // Tampilan Dekripsi RSA
 void rsa();                                                                    // Tampilan secara keseurugahn
+
+// == SUPER Chiper ==
+void superEnkripsi(){
+  string plaintext;
+  int kunciCaesar;
+  string kunciVigenere;
+  string kunciRC4;
+  int kunciPublik, modulus;
+
+  // Caesar Chipper
+  cout << endl;
+  cout << "--------------------------" << endl;
+  cout << "  Enkripsi dengan Caesar  " << endl;
+  cout << "--------------------------" << endl;
+  cout << "  Masukkan plaintext  : ";
+  getline(cin >> ws, plaintext);
+  cout << "  Masukkan kunci      : ";
+  cin >> kunciCaesar;
+  cout << endl;
+
+  string plaintextInput = plaintext;
+
+  for (int i = 0; i < plaintext.length(); i++)
+  {
+    if (isalpha(plaintext[i]))
+    {                                                 // Cek apakah karakter adalah huruf
+      char base = isupper(plaintext[i]) ? 'A' : 'a';       // Huruf besar atau kecil
+      plaintext[i] = (plaintext[i] - base + kunciCaesar) % 26 + base; // Geser huruf
+    }
+    else if (isdigit(plaintext[i]))
+    {                                               // Cek apakah karakter adalah angka
+      plaintext[i] = (plaintext[i] - '0' + kunciCaesar) % 10 + '0'; // Geser angka
+    }
+    else if (plaintext[i] == ' ')
+    { // Abaikan spasi
+      continue;
+    }
+    else
+    {
+      cout << "  Error: Teks mengandung karakter non-huruf/non-angka pada posisi " << i + 1 << "!" << endl;
+      return; // Berhenti jika ditemukan karakter non-huruf/angka selain spasi
+    }
+  }
+  cout << "  Plaintext    : " << plaintextInput << endl;
+  cout << "  Kunci        : " << kunciCaesar << endl;
+  cout << "  Chipertext   : " << plaintext << endl;
+  cout << endl;
+
+  // Vigenere
+  cout << "-----------------------------" << endl;
+  cout << "  Enkripsi dengan Vigenere   " << endl;
+  cout << "-----------------------------" << endl;
+  cout << "  Masukan kunci Vigenere : ";
+  getline(cin >> ws, kunciVigenere);
+  // kunciVigenere = inputKunciVigenere();
+  prepareKeyVigenere(kunciVigenere); // di uppercase
+
+  string resultEnkripsi;
+  int indeksKey = 0;
+
+  for(int i = 0; i < plaintext.length(); ++i){
+    char plainteks = plaintext[i];
+    if(plainteks >= 'a' && plainteks <= 'z'){
+      plainteks = toupper(plainteks);
+    } else if(plainteks < 'A' || plainteks > 'Z'){
+      resultEnkripsi += plainteks;
+      continue;
+    }
+
+    resultEnkripsi += ((plainteks - 'A') + (kunciVigenere[indeksKey] - 'A')) % 26 + 'A';
+    indeksKey = (indeksKey + 1) % kunciVigenere.length();
+  } 
+  cout << endl;
+  cout << "  Plaintext   : " << plaintext << endl;
+  cout << "  Kunci       : " << kunciVigenere << endl;
+  cout << "  Chipertext  : " << resultEnkripsi << endl;
+
+  // biar cuman satu
+  plaintext = resultEnkripsi;
+  cout << endl;
+
+  // RC4
+  cout << "-------------------------" << endl;
+  cout << "  Enkripsi dengan RC4    " << endl;
+  cout << "-------------------------" << endl;
+
+  cout << "  Masukkan kunci: ";
+  getline(cin >> ws, kunciRC4);
+  cout << endl;
+
+  string encrypted = rc4_crypt(plaintext, kunciRC4);
+  string encrypted_hex = rc4_to_hex(encrypted);
+
+  cout << "  Plaintext         : " << plaintext << endl;
+  cout << "  Kunci             : " << kunciRC4 << endl;
+  cout << "  Chipertext (hex)  : " << encrypted_hex << endl;
+
+  // biar cuman satu
+  plaintext = encrypted_hex;
+  cout << endl;
+  // RSA
+  cout << "-------------------------" << endl;
+  cout << "  Enkripsi dengan RSA    " << endl;
+  cout << "-------------------------" << endl;
+
+  cout << "  Masukkan Kunci Publik : ";
+  cin >> kunciPublik;
+  cout << "  Masukkan Modulus : ";
+  cin >> modulus;
+  cout << endl;
+  // CODE BERKERJA
+
+  // 1. Plaintext ubah jadi ASCII
+  int plaintextASCI[plaintext.length()];
+  vector<long long> ciphertext = encrypt(plaintext, kunciPublik, modulus);
+
+  // konversi plaintext
+  for (int i = 0; i < plaintext.length(); i++)
+  {
+    plaintextASCI[i] = (int)plaintext[i]; 
+  }
+
+  cout << "  Plaintext         : " << plaintext << endl;
+  cout << "  Kunci Publik      : " << kunciPublik << endl;
+  cout << "  Modulus           : " << modulus << endl;
+  cout << "  Ciphertext        : ";
+  for (long long value : ciphertext)
+  {
+    cout << value << " ";
+  }
+  cout << endl;
+}
+
+void superDekripsi(){
+  
+}
+
+void super(){
+  int pilihan;
+  char ulang;
+
+   do {
+        system("cls");
+        cout << "---------------------------------------" << endl;
+        cout << "        >> Menu Super Enkripsi <<      " << endl;
+        cout << "---------------------------------------" << endl;
+        cout << "Pilih mode yang diinginkan   :" << endl;
+        cout << "  1. Enkripsi \n";
+        cout << "  2. Deskripsi \n";
+        cout << "  3. Keluar \n";
+        cout << "Masukkan Mode yang diinginkan: ";
+        cin >> pilihan;
+        cin.ignore();
+        cout << endl;
+
+        switch (pilihan) {
+        case 1:
+            superEnkripsi();
+            break;
+        case 2:
+           superDekripsi();
+            break;
+        case 3 :
+            cout << "Keluar dari Menu Super Enkripsi" << endl;
+            return;
+            break;
+
+        default:
+            cout << "Pilihan tidak valid." << endl;
+            break;
+        }
+        cout << "\nKembali Ke Menu Super Enkripsi (y/t): ";
+        cin >> ulang;
+    } 
+    while (toupper(ulang) == 'Y');
+    system("cls");
+}
 
 int main()
 {
@@ -83,7 +262,7 @@ int main()
     }
     else if (pilih == 5)
     {
-      
+      super();
     }
     else if (pilih == 6)
     {
@@ -239,10 +418,10 @@ bool validasiKunci(string key){
 // Fungsi untuk meminta input kunci
 string inputKunciVigenere(){
     string key;
-    do{
+    while(!validasiKunci(key)){
         cout << "Masukkan kunci: ";
         getline(cin, key);
-    } while(!validasiKunci(key));
+    };
     return key;
 }
 
@@ -744,11 +923,13 @@ void rsa()
   // Tampilan
   do
   {
+    cout << endl;
     judul();
     cout << "Pilih mode yang akan di inginkan : \n";
     cout << "0. Generate Kunci \n";
     cout << "1. Enkripsi \n";
     cout << "2. Dekripsi \n";
+    cout << "3. Keluar \n";
     cout << "Masukan mode yang diinginkan : ";
     cin >> menu;
     cout << endl;
@@ -768,6 +949,11 @@ void rsa()
       system("cls");
       dekripsiRSA();
       cout << endl;
+    }
+    else if (menu == '3'){
+      cout << "Keluar dari Menu RSA" << endl;
+      return;
+      break;
     }
     cout << "kembali ke menu (y/n) : ";
     cin >> menu;
