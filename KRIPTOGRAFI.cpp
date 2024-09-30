@@ -176,7 +176,109 @@ void superEnkripsi(){
 }
 
 void superDekripsi(){
-  
+  string chipertext;
+  int kunciPrivat, modulus;
+  string kunciRC4;
+  string kunciVigenere;
+  int kunciCaesar;
+
+  string ciphertextInput;
+  // RSA
+  cout << "-------------------------" << endl;
+  cout << "  Enkripsi dengan RSA    " << endl;
+  cout << "-------------------------" << endl;
+  cout << "Masukkan Ciphertext : ";
+  getline(cin >> ws, ciphertextInput);
+  cout << "Masukkan Kunci Privat : ";
+  cin >> kunciPrivat;
+  cout << "Masukkan Modulus : ";
+  cin >> modulus;
+  cout << endl;
+
+  vector<long long> ciphertext = parseInputToVector(ciphertextInput);
+  string plaintext = decrypt(ciphertext, kunciPrivat, modulus);
+
+  cout << "Ciphertext    : " << ciphertextInput << endl;
+  cout << "Kunci Publik  : " << kunciPrivat << endl;
+  cout << "Modulus       : " << modulus << endl;
+  cout << "Plaintext     : " << plaintext << endl;
+
+  cout << endl;
+  // RC4
+  cout << "-------------------------" << endl;
+  cout << "  Enkripsi dengan RC4    " << endl;
+  cout << "-------------------------" << endl;
+  cout << "Masukan kunci RC4 : ";
+  getline(cin >> ws, kunciRC4);
+  cout << endl;
+
+  string decrypted = rc4_crypt(rc4_from_hex(plaintext), kunciRC4);
+
+  cout << "Ciphertext  : " << plaintext << endl;
+  cout << "Kunci RC4   : " << kunciRC4 << endl;
+  cout << "Plaintext   : " << decrypted << endl;
+
+  plaintext = decrypted;
+  cout << endl;
+  // Vigenere
+  cout << "------------------------------" << endl;
+  cout << "  Enkripsi dengan Vigenere    " << endl;
+  cout << "------------------------------" << endl;
+  cout << "Masukan kunci Vigenere : ";
+  getline(cin >> ws, kunciVigenere);
+  prepareKeyVigenere(kunciVigenere);
+  cout << endl;
+
+  string resultDekripsi;
+  int indeksKey = 0;
+
+  for(int i = 0; i < plaintext.length(); ++i){
+    char chiperteks = plaintext[i];
+
+    if(chiperteks >= 'a' && chiperteks <= 'z'){
+      chiperteks = toupper(chiperteks);
+    } else if(chiperteks < 'A' || chiperteks > 'Z'){
+      resultDekripsi += chiperteks;
+      continue;
+    }
+
+    resultDekripsi += (chiperteks - kunciVigenere[indeksKey] + 26) % 26 + 'A';
+    indeksKey = (indeksKey + 1) % kunciVigenere.length();
+  }
+  cout << "Plaintext   : " << plaintext << endl;
+  cout << "Kunci       : " << kunciVigenere << endl;
+  cout << "Chipertext  : " << resultDekripsi << endl;
+
+
+  plaintext = resultDekripsi;
+  cout << endl;
+  // Caesar
+  cout << "-------------------------" << endl;
+  cout << "  Enkripsi dengan Caesar " << endl;
+  cout << "-------------------------" << endl;
+  cout << "Masukkan kunci : ";
+  cin >> kunciCaesar;
+  cout << endl;
+
+  string text = plaintext;
+
+  for (int i = 0; i < text.length(); i++)  {
+    if (isalpha(text[i])) {                                                      // Cek apakah karakter adalah huruf
+      char base = isupper(text[i]) ? 'A' : 'a';            // Huruf besar atau kecil
+      text[i] = (text[i] - base - kunciCaesar + 26) % 26 + base; // Geser huruf ke belakang
+    } else if (isdigit(text[i])){                                                    // Cek apakah karakter adalah angka
+      text[i] = (text[i] - '0' - kunciCaesar + 10) % 10 + '0'; // Geser angka ke belakang
+    } else if (text[i] == ' '){ // Abaikan spasi
+        continue;
+    } else {
+        cout << "  Error: Teks mengandung karakter non-huruf/non-angka pada posisi " << i + 1 << "!" << endl;
+        return; // Berhenti jika ditemukan karakter non-huruf/angka selain spasi
+    }
+  }
+
+  cout << "Plaintext   : " << plaintext << endl;
+  cout << "Kunci       : " << kunciVigenere << endl;
+  cout << "Chipertext  : " << text << endl;
 }
 
 void super(){
@@ -184,7 +286,6 @@ void super(){
   char ulang;
 
    do {
-        system("cls");
         cout << "---------------------------------------" << endl;
         cout << "        >> Menu Super Enkripsi <<      " << endl;
         cout << "---------------------------------------" << endl;
@@ -217,7 +318,6 @@ void super(){
         cin >> ulang;
     } 
     while (toupper(ulang) == 'Y');
-    system("cls");
 }
 
 int main()
