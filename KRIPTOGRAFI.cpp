@@ -760,6 +760,7 @@ void RC4()
       string encrypted = rc4_crypt(input, key);
       string encrypted_hex = rc4_to_hex(encrypted);
       cout << "  Hasil enkripsi (hex): " << encrypted_hex << endl;
+      system("pause");
     }
     else if (pilihan == 2)
     {
@@ -769,10 +770,12 @@ void RC4()
 
       string decrypted = rc4_crypt(rc4_from_hex(input), key);
       cout << "  Hasil dekripsi: " << decrypted << endl;
+      system("pause");
     }
     else
     {
       cout << "  Pilihan tidak valid.\n";
+      system("pause");
     }
   }
 }
